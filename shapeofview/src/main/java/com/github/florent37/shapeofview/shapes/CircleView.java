@@ -42,8 +42,8 @@ public class CircleView extends ShapeOfView {
     private void init(Context context, AttributeSet attrs) {
         if (attrs != null) {
             final TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.CircleView);
-            borderWidthPx = attributes.getDimensionPixelSize(R.styleable.CircleView_circle_borderWidth, borderWidthPx);
-            borderColor = attributes.getColor(R.styleable.CircleView_circle_borderColor, borderColor);
+            borderWidthPx = attributes.getDimensionPixelSize(R.styleable.CircleView_shape_circle_borderWidth, borderWidthPx);
+            borderColor = attributes.getColor(R.styleable.CircleView_shape_circle_borderColor, borderColor);
             attributes.recycle();
         }
         borderPaint.setAntiAlias(true);
@@ -56,6 +56,11 @@ public class CircleView extends ShapeOfView {
                 path.addCircle(width/2f, height/2f, Math.min(width/2f, height/2f), Path.Direction.CW);
 
                 return path;
+            }
+
+            @Override
+            public boolean requiresBitmap() {
+                return false;
             }
         });
     }
@@ -73,11 +78,12 @@ public class CircleView extends ShapeOfView {
 
     public void setBorderWidthPx(int borderWidthPx) {
         this.borderWidthPx = borderWidthPx;
-        postInvalidate();
+        requiresShapeUpdate();
     }
 
     public void setBorderColor(@ColorInt int borderColor) {
         this.borderColor = borderColor;
+        requiresShapeUpdate();
     }
 
     public float getBorderWidth() {

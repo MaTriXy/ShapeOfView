@@ -2,8 +2,12 @@ package com.github.florent37.shapeofview.shapes;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -15,16 +19,19 @@ import com.github.florent37.shapeofview.manager.ClipPathManager;
 public class RoundRectView extends ShapeOfView {
 
     private final RectF rectF = new RectF();
-    //private final RectF borderRectF = new RectF();
-    //private final Path borderPath = new Path();
-    //private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private int topLeftDiameter;
-    private int topRightDiameter;
-    private int bottomRightDiameter;
-    private int bottomLeftDiameter;
-    //@ColorInt
-    //private int borderColor = Color.WHITE;
-    //private int borderWidthPx = 0;
+    private int topLeftRadius;
+    private int topRightRadius;
+    private int bottomRightRadius;
+    private int bottomLeftRadius;
+
+    //region border
+    private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final RectF borderRectF = new RectF();
+    private final Path borderPath = new Path();
+    @ColorInt
+    private int borderColor = Color.WHITE;
+    private int borderWidthPx = 0;
+    //endregion
 
     public RoundRectView(@NonNull Context context) {
         super(context);
@@ -44,30 +51,49 @@ public class RoundRectView extends ShapeOfView {
     private void init(Context context, AttributeSet attrs) {
         if (attrs != null) {
             final TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.RoundRectView);
-            topLeftDiameter = attributes.getDimensionPixelSize(R.styleable.RoundRectView_roundRect_topLeftDiameter, topLeftDiameter);
-            topRightDiameter = attributes.getDimensionPixelSize(R.styleable.RoundRectView_roundRect_topRightDiameter, topRightDiameter);
-            bottomLeftDiameter = attributes.getDimensionPixelSize(R.styleable.RoundRectView_roundRect_bottomLeftDiameter, bottomLeftDiameter);
-            bottomRightDiameter = attributes.getDimensionPixelSize(R.styleable.RoundRectView_roundRect_bottomRightDiameter, bottomRightDiameter);
-           // borderColor = attributes.getColor(R.styleable.RoundRectView_roundRect_borderColor, borderColor);
-           // borderWidthPx = attributes.getDimensionPixelSize(R.styleable.RoundRectView_roundRect_bottomRightDiameter, bottomRightDiameter);
+            topLeftRadius = attributes.getDimensionPixelSize(R.styleable.RoundRectView_shape_roundRect_topLeftRadius, topLeftRadius);
+            topRightRadius = attributes.getDimensionPixelSize(R.styleable.RoundRectView_shape_roundRect_topRightRadius, topRightRadius);
+            bottomLeftRadius = attributes.getDimensionPixelSize(R.styleable.RoundRectView_shape_roundRect_bottomLeftRadius, bottomLeftRadius);
+            bottomRightRadius = attributes.getDimensionPixelSize(R.styleable.RoundRectView_shape_roundRect_bottomRightRadius, bottomRightRadius);
+            borderColor = attributes.getColor(R.styleable.RoundRectView_shape_roundRect_borderColor, borderColor);
+            borderWidthPx = attributes.getDimensionPixelSize(R.styleable.RoundRectView_shape_roundRect_borderWidth, borderWidthPx);
             attributes.recycle();
         }
-        //borderPaint.setStyle(Paint.Style.STROKE);
+        borderPaint.setStyle(Paint.Style.STROKE);
         super.setClipPathCreator(new ClipPathManager.ClipPathCreator() {
             @Override
             public Path createClipPath(int width, int height) {
                 rectF.set(0, 0, width, height);
-                return generatePath(rectF, topLeftDiameter, topRightDiameter, bottomRightDiameter, bottomLeftDiameter);
+                return generatePath(rectF,
+                        limitSize(topLeftRadius, width, height),
+                        limitSize(topRightRadius, width, height),
+                        limitSize(bottomRightRadius, width, height),
+                        limitSize(bottomLeftRadius, width, height)
+                );
+            }
+
+            @Override
+            public boolean requiresBitmap() {
+                return false;
             }
         });
     }
 
-    /*
+    protected float limitSize(float from, final float width, final float height){
+        return Math.min(from, Math.min(width, height));
+    }
+
     @Override
-    public void invalidate() {
-        super.invalidate();
-        borderRectF.set(borderWidthPx / 2f, borderWidthPx / 2f, getHeight() - borderWidthPx / 2f, getWidth() - borderWidthPx / 2f);
-        borderPath.set(generatePath(borderRectF, topLeftDiameter, topRightDiameter, bottomRightDiameter, bottomLeftDiameter));
+    public void requiresShapeUpdate(){
+        borderRectF.set(borderWidthPx / 2f, borderWidthPx / 2f, getWidth() - borderWidthPx / 2f, getHeight() - borderWidthPx / 2f);
+
+        borderPath.set(generatePath(borderRectF,
+                topLeftRadius,
+                topRightRadius,
+                bottomRightRadius,
+                bottomLeftRadius
+        ));
+        super.requiresShapeUpdate();
     }
 
     @Override
@@ -80,74 +106,115 @@ public class RoundRectView extends ShapeOfView {
             canvas.drawPath(borderPath, borderPaint);
         }
     }
-    */
 
-    private Path generatePath(RectF rect, float topLeftDiameter, float topRightDiameter, float bottomRightDiameter, float bottomLeftDiameter) {
+    private Path generatePath(RectF rect, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius) {
+        return generatePath(false, rect, topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius);
+    }
+
+    private Path generatePath(boolean useBezier, RectF rect, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius) {
         final Path path = new Path();
 
-        topLeftDiameter = topLeftDiameter < 0 ? 0 : topLeftDiameter;
-        topRightDiameter = topRightDiameter < 0 ? 0 : topRightDiameter;
-        bottomLeftDiameter = bottomLeftDiameter < 0 ? 0 : bottomLeftDiameter;
-        bottomRightDiameter = bottomRightDiameter < 0 ? 0 : bottomRightDiameter;
+        final float left = rect.left;
+        final float top = rect.top;
+        final float bottom = rect.bottom;
+        final float right = rect.right;
 
-        path.moveTo(rect.left + topLeftDiameter, rect.top);
-        path.lineTo(rect.right - topRightDiameter, rect.top);
-        path.quadTo(rect.right, rect.top, rect.right, rect.top + topRightDiameter);
-        path.lineTo(rect.right, rect.bottom - bottomRightDiameter);
-        path.quadTo(rect.right, rect.bottom, rect.right - bottomRightDiameter, rect.bottom);
-        path.lineTo(rect.left + bottomLeftDiameter, rect.bottom);
-        path.quadTo(rect.left, rect.bottom, rect.left, rect.bottom - bottomLeftDiameter);
-        path.lineTo(rect.left, rect.top + topLeftDiameter);
-        path.quadTo(rect.left, rect.top, rect.left + topLeftDiameter, rect.top);
+        final float minSize = Math.min(rect.width() / 2f, rect.height() / 2f);
+
+        topLeftRadius = topLeftRadius < 0 ? 0 : topLeftRadius;
+        topRightRadius = topRightRadius < 0 ? 0 : topRightRadius;
+        bottomLeftRadius = bottomLeftRadius < 0 ? 0 : bottomLeftRadius;
+        bottomRightRadius = bottomRightRadius < 0 ? 0 : bottomRightRadius;
+
+        if (topLeftRadius > minSize) {
+            topLeftRadius = minSize;
+        }
+        if (topRightRadius > minSize) {
+            topRightRadius = minSize;
+        }
+        if (bottomLeftRadius > minSize) {
+            bottomLeftRadius = minSize;
+        }
+        if (bottomRightRadius > minSize) {
+            bottomRightRadius = minSize;
+        }
+
+        path.moveTo(left + topLeftRadius, top);
+        path.lineTo(right - topRightRadius, top);
+
+        //float left, float top, float right, float bottom, float startAngle, float sweepAngle, boolean forceMoveTo
+        if (useBezier) {
+            path.quadTo(right, top, right, top + topRightRadius);
+        } else {
+            path.arcTo(new RectF(right - topRightRadius * 2f, top, right, top + topRightRadius * 2f), -90, 90);
+        }
+        path.lineTo(right, bottom - bottomRightRadius);
+        if (useBezier) {
+            path.quadTo(right, bottom, right - bottomRightRadius, bottom);
+        } else {
+            path.arcTo(new RectF(right - bottomRightRadius * 2f, bottom - bottomRightRadius * 2f, right, bottom), 0, 90);
+        }
+        path.lineTo(left + bottomLeftRadius, bottom);
+        if (useBezier) {
+            path.quadTo(left, bottom, left, bottom - bottomLeftRadius);
+        } else {
+            path.arcTo(new RectF(left, bottom - bottomLeftRadius * 2f, left + bottomLeftRadius * 2f, bottom), 90, 90);
+        }
+        path.lineTo(left, top + topLeftRadius);
+        if (useBezier) {
+            path.quadTo(left, top, left + topLeftRadius, top);
+        } else {
+            path.arcTo(new RectF(left, top, left + topLeftRadius * 2f, top + topLeftRadius * 2f), 180, 90);
+        }
         path.close();
 
         return path;
     }
 
-    public int getTopLeftDiameter() {
-        return topLeftDiameter;
+    public int getTopLeftRadius() {
+        return topLeftRadius;
     }
 
-    public void setTopLeftDiameter(int topLeftDiameter) {
-        this.topLeftDiameter = topLeftDiameter;
-        postInvalidate();
+    public void setTopLeftRadius(int topLeftRadius) {
+        this.topLeftRadius = topLeftRadius;
+        requiresShapeUpdate();
     }
 
-    public int getTopRightDiameter() {
-        return topRightDiameter;
+    public int getTopRightRadius() {
+        return topRightRadius;
     }
 
-    public void setTopRightDiameter(int topRightDiameter) {
-        this.topRightDiameter = topRightDiameter;
-        postInvalidate();
+    public void setTopRightRadius(int topRightRadius) {
+        this.topRightRadius = topRightRadius;
+        requiresShapeUpdate();
     }
 
-    public int getBottomRightDiameter() {
-        return bottomRightDiameter;
+    public int getBottomRightRadius() {
+        return bottomRightRadius;
     }
 
-    public void setBottomRightDiameter(int bottomRightDiameter) {
-        this.bottomRightDiameter = bottomRightDiameter;
-        postInvalidate();
+    public void setBottomRightRadius(int bottomRightRadius) {
+        this.bottomRightRadius = bottomRightRadius;
+        requiresShapeUpdate();
     }
 
-    public int getBottomLeftDiameter() {
-        return bottomLeftDiameter;
+    public int getBottomLeftRadius() {
+        return bottomLeftRadius;
     }
 
-    public void setBottomLeftDiameter(int bottomLeftDiameter) {
-        this.bottomLeftDiameter = bottomLeftDiameter;
-        postInvalidate();
+    public void setBottomLeftRadius(int bottomLeftRadius) {
+        this.bottomLeftRadius = bottomLeftRadius;
+        requiresShapeUpdate();
     }
 
-    /*
+
     public int getBorderColor() {
         return borderColor;
     }
 
     public void setBorderColor(int borderColor) {
         this.borderColor = borderColor;
-        postInvalidate();
+        requiresShapeUpdate();
     }
 
     public int getBorderWidthPx() {
@@ -156,7 +223,6 @@ public class RoundRectView extends ShapeOfView {
 
     public void setBorderWidthPx(int borderWidthPx) {
         this.borderWidthPx = borderWidthPx;
-        postInvalidate();
+        requiresShapeUpdate();
     }
-    */
 }

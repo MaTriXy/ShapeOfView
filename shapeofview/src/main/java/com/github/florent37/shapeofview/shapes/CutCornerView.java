@@ -39,10 +39,10 @@ public class CutCornerView extends ShapeOfView {
     private void init(Context context, AttributeSet attrs) {
         if (attrs != null) {
             final TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.CutCornerView);
-            topLeftCutSize = attributes.getDimensionPixelSize(R.styleable.CutCornerView_cutCorner_topLeftSize, topLeftCutSize);
-            topRightCutSize = attributes.getDimensionPixelSize(R.styleable.CutCornerView_cutCorner_topRightSize, topRightCutSize);
-            bottomLeftCutSize = attributes.getDimensionPixelSize(R.styleable.CutCornerView_cutCorner_bottomLeftSize, bottomLeftCutSize);
-            bottomRightCutSize = attributes.getDimensionPixelSize(R.styleable.CutCornerView_cutCorner_bottomRightSize, bottomRightCutSize);
+            topLeftCutSize = attributes.getDimensionPixelSize(R.styleable.CutCornerView_shape_cutCorner_topLeftSize, topLeftCutSize);
+            topRightCutSize = attributes.getDimensionPixelSize(R.styleable.CutCornerView_shape_cutCorner_topRightSize, topRightCutSize);
+            bottomLeftCutSize = attributes.getDimensionPixelSize(R.styleable.CutCornerView_shape_cutCorner_bottomLeftSize, bottomLeftCutSize);
+            bottomRightCutSize = attributes.getDimensionPixelSize(R.styleable.CutCornerView_shape_cutCorner_bottomRightSize, bottomRightCutSize);
             attributes.recycle();
         }
         super.setClipPathCreator(new ClipPathManager.ClipPathCreator() {
@@ -50,6 +50,11 @@ public class CutCornerView extends ShapeOfView {
             public Path createClipPath(int width, int height) {
                 rectF.set(0, 0, width, height);
                 return generatePath(rectF, topLeftCutSize, topRightCutSize, bottomRightCutSize, bottomLeftCutSize);
+            }
+
+            @Override
+            public boolean requiresBitmap() {
+                return false;
             }
         });
     }
@@ -82,7 +87,7 @@ public class CutCornerView extends ShapeOfView {
 
     public void setTopLeftCutSize(int topLeftCutSize) {
         this.topLeftCutSize = topLeftCutSize;
-        postInvalidate();
+        requiresShapeUpdate();
     }
 
     public int getTopRightCutSize() {
@@ -91,7 +96,7 @@ public class CutCornerView extends ShapeOfView {
 
     public void setTopRightCutSize(int topRightCutSize) {
         this.topRightCutSize = topRightCutSize;
-        postInvalidate();
+        requiresShapeUpdate();
     }
 
     public int getBottomRightCutSize() {
@@ -100,7 +105,7 @@ public class CutCornerView extends ShapeOfView {
 
     public void setBottomRightCutSize(int bottomRightCutSize) {
         this.bottomRightCutSize = bottomRightCutSize;
-        postInvalidate();
+        requiresShapeUpdate();
     }
 
     public int getBottomLeftCutSize() {
@@ -109,6 +114,6 @@ public class CutCornerView extends ShapeOfView {
 
     public void setBottomLeftCutSize(int bottomLeftCutSize) {
         this.bottomLeftCutSize = bottomLeftCutSize;
-        postInvalidate();
+        requiresShapeUpdate();
     }
 }

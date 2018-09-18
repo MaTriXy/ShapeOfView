@@ -35,9 +35,9 @@ public class TriangleView extends ShapeOfView {
     private void init(Context context, AttributeSet attrs) {
         if (attrs != null) {
             final TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.TriangleView);
-            percentBottom = attributes.getFloat(R.styleable.TriangleView_triangle_percentBottom, percentBottom);
-            percentLeft = attributes.getFloat(R.styleable.TriangleView_triangle_percentLeft, percentLeft);
-            percentRight = attributes.getFloat(R.styleable.TriangleView_triangle_percentRight, percentRight);
+            percentBottom = attributes.getFloat(R.styleable.TriangleView_shape_triangle_percentBottom, percentBottom);
+            percentLeft = attributes.getFloat(R.styleable.TriangleView_shape_triangle_percentLeft, percentLeft);
+            percentRight = attributes.getFloat(R.styleable.TriangleView_shape_triangle_percentRight, percentRight);
             attributes.recycle();
         }
         super.setClipPathCreator(new ClipPathManager.ClipPathCreator() {
@@ -47,9 +47,15 @@ public class TriangleView extends ShapeOfView {
 
                 path.moveTo(0, percentLeft * height);
                 path.lineTo(percentBottom * width, height);
-                path.lineTo(getWidth(), percentRight * height);
+                path.lineTo(width, percentRight * height);
+                path.close();
 
                 return path;
+            }
+
+            @Override
+            public boolean requiresBitmap() {
+                return false;
             }
         });
     }
@@ -60,7 +66,7 @@ public class TriangleView extends ShapeOfView {
 
     public void setPercentBottom(float percentBottom) {
         this.percentBottom = percentBottom;
-        postInvalidate();
+        requiresShapeUpdate();
     }
 
     public float getPercentLeft() {
@@ -69,7 +75,7 @@ public class TriangleView extends ShapeOfView {
 
     public void setPercentLeft(float percentLeft) {
         this.percentLeft = percentLeft;
-        postInvalidate();
+        requiresShapeUpdate();
     }
 
     public float getPercentRight() {
@@ -78,6 +84,6 @@ public class TriangleView extends ShapeOfView {
 
     public void setPercentRight(float percentRight) {
         this.percentRight = percentRight;
-        postInvalidate();
+        requiresShapeUpdate();
     }
 }

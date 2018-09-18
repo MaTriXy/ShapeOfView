@@ -50,9 +50,9 @@ public class DiagonalView extends ShapeOfView {
     private void init(Context context, AttributeSet attrs) {
         if (attrs != null) {
             final TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.DiagonalView);
-            diagonalAngle = attributes.getInteger(R.styleable.DiagonalView_diagonal_angle, diagonalAngle);
-            diagonalDirection = attributes.getInteger(R.styleable.DiagonalView_diagonal_direction, diagonalDirection);
-            diagonalPosition = attributes.getInteger(R.styleable.DiagonalView_diagonal_position, diagonalPosition);
+            diagonalAngle = attributes.getInteger(R.styleable.DiagonalView_shape_diagonal_angle, diagonalAngle);
+            diagonalDirection = attributes.getInteger(R.styleable.DiagonalView_shape_diagonal_direction, diagonalDirection);
+            diagonalPosition = attributes.getInteger(R.styleable.DiagonalView_shape_diagonal_position, diagonalPosition);
             attributes.recycle();
         }
         super.setClipPathCreator(new ClipPathManager.ClipPathCreator() {
@@ -127,12 +127,17 @@ public class DiagonalView extends ShapeOfView {
                 }
                 return path;
             }
+
+            @Override
+            public boolean requiresBitmap() {
+                return false;
+            }
         });
     }
 
     public void setDiagonalPosition(@DiagonalPosition int diagonalPosition) {
         this.diagonalPosition = diagonalPosition;
-        postInvalidate();
+        requiresShapeUpdate();
     }
 
     public int getDiagonalPosition() {
@@ -145,7 +150,7 @@ public class DiagonalView extends ShapeOfView {
 
     public void setDiagonalDirection(int diagonalDirection) {
         this.diagonalDirection = diagonalDirection;
-        postInvalidate();
+        requiresShapeUpdate();
     }
 
     public int getDiagonalAngle() {
@@ -154,6 +159,6 @@ public class DiagonalView extends ShapeOfView {
 
     public void setDiagonalAngle(int diagonalAngle) {
         this.diagonalAngle = diagonalAngle;
-        postInvalidate();
+        requiresShapeUpdate();
     }
 }
