@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,19 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context="com.github.florent37.shapeofview.sample.ShapeOfViewMainActivity">
+        tools:context="com.github.florent37.shapeofview.sample.io.github.florent37.shapeofview.sample.ShapeOfViewMainActivity">
 
-        <com.github.florent37.shapeofview.shapes.ArcView
+        <io.github.florent37.shapeofview.shapes.ArcView
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_marginBottom="8dp"
             android:elevation="4dp"
-            app:shape_arc_cropDirection="outside"
             app:shape_arc_height="30dp"
-            app:shape_arc_position="bottom"
-            app:shape_diagonal_angle="10"
-            app:shape_diagonal_direction="left"
-            app:shape_diagonal_position="bottom">
+            app:shape_arc_position="bottom">
 
             <ImageView
                 android:layout_width="match_parent"
@@ -29,9 +25,9 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/shape_of_view" />
 
-        </com.github.florent37.shapeofview.shapes.ArcView>
+        </io.github.florent37.shapeofview.shapes.ArcView>
 
-        <com.github.florent37.shapeofview.shapes.CircleView
+        <io.github.florent37.shapeofview.shapes.CircleView
             android:id="@+id/circle"
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -62,8 +58,8 @@
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
-        </com.github.florent37.shapeofview.shapes.CircleView>
+        </io.github.florent37.shapeofview.shapes.CircleView>
 
     </LinearLayout>
-</android.support.v4.widget.NestedScrollView>
+</androidx.core.widget.NestedScrollView>
 

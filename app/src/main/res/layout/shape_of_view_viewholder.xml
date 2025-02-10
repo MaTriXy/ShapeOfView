@@ -1,10 +1,10 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.github.florent37.shapeofview.shapes.RoundRectView
+    <io.github.florent37.shapeofview.shapes.RoundRectView
         android:layout_width="match_parent"
         android:layout_height="100dp"
         app:shape_roundRect_bottomLeftRadius="15dp"
@@ -12,13 +12,13 @@
         app:shape_roundRect_topLeftRadius="15dp"
         app:shape_roundRect_topRightRadius="15dp">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/colorPrimary">
 
 
-            <com.github.florent37.shapeofview.shapes.DiagonalView
+            <io.github.florent37.shapeofview.shapes.DiagonalView
                 android:id="@+id/diagonal_view"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
@@ -28,7 +28,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:shape_diagonal_angle="30"
-                app:shape_diagonal_direction="right"
                 app:shape_diagonal_position="right">
 
                 <ImageView
@@ -37,7 +36,7 @@
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     tools:src="@drawable/shape_of_view_shoes" />
-            </com.github.florent37.shapeofview.shapes.DiagonalView>
+            </io.github.florent37.shapeofview.shapes.DiagonalView>
 
             <TextView
                 android:id="@+id/tv_cell_title"
@@ -109,6 +108,6 @@
                 app:layout_constraintGuide_percent="0.90" />
 
 
-        </android.support.constraint.ConstraintLayout>
-    </com.github.florent37.shapeofview.shapes.RoundRectView>
-</android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout >
+    </io.github.florent37.shapeofview.shapes.RoundRectView>
+</androidx.constraintlayout.widget.ConstraintLayout >

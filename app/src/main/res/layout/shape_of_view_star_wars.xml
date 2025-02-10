@@ -15,7 +15,7 @@
         android:orientation="vertical"
         >
 
-        <com.github.florent37.shapeofview.shapes.ArcView
+        <io.github.florent37.shapeofview.shapes.ArcView
             android:id="@+id/diagonalLayout"
             android:layout_width="match_parent"
             android:layout_height="380dp"
@@ -23,9 +23,8 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:elevation="10dip"
-            app:shape_arc_cropDirection="outside"
             app:shape_arc_position="bottom"
-            app:shape_arc_height="50dp"
+            app:shape_arc_height="-50dp"
             >
 
             <com.flaviofaria.kenburnsview.KenBurnsView
@@ -51,9 +50,9 @@
 
             </FrameLayout>
 
-        </com.github.florent37.shapeofview.shapes.ArcView>
+        </io.github.florent37.shapeofview.shapes.ArcView>
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
